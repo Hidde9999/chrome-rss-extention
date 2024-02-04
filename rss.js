@@ -1,9 +1,10 @@
 let videoListOpen = false
 let channelList = []
+let selChannel= {}
 let category = ""
 const corsSites = ["odysee.com", "youtube.com"]
 
-function getRssFeeds(rssUrl, name) {
+function getRssFeeds(rssUrl, name, refresh) {
     if (videoListOpen){
         return
     }
@@ -22,7 +23,14 @@ function getRssFeeds(rssUrl, name) {
     }
     hideFeedPopup()
 
-    getItems(rssUrl)
+    videoList = []
+    console.log(refresh);
+    if(localStorage.getItem(name) && !refresh){
+        loadVideo(name)
+    } else {
+        getItems(rssUrl, name)
+    }
+
 }
 function getRssFeedTitle(feedUrl) {
     if (corsSites.some(site => feedUrl.includes(site))) {
@@ -61,7 +69,7 @@ function noCORSProxy(url){
     const proxyUrl = 'https://corsproxy.io/?'
     return proxyUrl + url
 }
-function getItems(rssUrl){
+function getItems(rssUrl, name){
     fetch(rssUrl)
         .then(response => response.text())
         .then(xmlString => {
@@ -69,6 +77,8 @@ function getItems(rssUrl){
             const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
 
             const videosList = document.getElementById('videos');
+            videosList.innerHTML= ""
+            console.log("hier")
 
             if (rssUrl.includes("yewtu.be") || rssUrl.includes("youtube.com")){
                 const entries = xmlDoc.querySelectorAll('entry');
@@ -78,14 +88,13 @@ function getItems(rssUrl){
                     let link = linkElement ? linkElement.getAttribute('href') : entry.querySelector('link').textContent;
                     const published = entry.querySelector('published').textContent
 
+                    saveVideo(title, link, published, name)
+
                     if (link.includes("youtube.com")){
                         link = link.replace("youtube.com", "yewtu.be")
                     }
 
-                    // Create list item and append to the ordered list
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<strong><a href="${link}" target="_blank">${title}</a></strong> - (Published on ${published})`;
-                    videosList.appendChild(listItem);
+                    otherVideo(videosList, title, link, published)
                 });
             } else {
                 const items = xmlDoc.querySelectorAll('item');
@@ -94,10 +103,9 @@ function getItems(rssUrl){
                     const link = item.querySelector('link').textContent;
                     const pubDate = item.querySelector('pubDate').textContent;
 
-                    // Create list item and append to the ordered list
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<strong><a href="${link}" target="_blank">${title}</a></strong> - (Published on ${pubDate})`;
-                    videosList.appendChild(listItem);
+                    saveVideo(title, link, pubDate, name)
+
+                    otherVideo(videosList, title, link, pubDate)
                 });
             }
         })
@@ -127,7 +135,8 @@ function loadChannel(){
                 const strongElement = document.createElement('strong');
                 strongElement.textContent = list.name;
                 strongElement.addEventListener('click', function() {
-                    getRssFeeds(list.url, list.name);
+                    selChannel = channelList[i]
+                    getRssFeeds(list.url, list.name, false);
                 });
 
                 // Create the button for removing the channel
