@@ -24,7 +24,6 @@ function getRssFeeds(rssUrl, name, refresh) {
     hideFeedPopup()
 
     videoList = []
-    console.log(refresh);
     if(localStorage.getItem(name) && !refresh){
         loadVideo(name)
     } else {
@@ -82,7 +81,7 @@ function getItems(rssUrl, name){
 
             if (rssUrl.includes("yewtu.be") || rssUrl.includes("youtube.com")){
                 const entries = xmlDoc.querySelectorAll('entry');
-                entries.forEach(entry => {
+                entries.forEach((entry, i) => {
                     const title = entry.querySelector('title').textContent;
                     const linkElement = entry.querySelector('link[rel="alternate"]');
                     let link = linkElement ? linkElement.getAttribute('href') : entry.querySelector('link').textContent;
@@ -94,18 +93,18 @@ function getItems(rssUrl, name){
                         link = link.replace("youtube.com", "yewtu.be")
                     }
 
-                    otherVideo(videosList, title, link, published)
+                    otherVideo(videosList, title, link, published, false, i, name)
                 });
             } else {
                 const items = xmlDoc.querySelectorAll('item');
-                items.forEach(item => {
+                items.forEach((item, i) => {
                     const title = item.querySelector('title').textContent;
                     const link = item.querySelector('link').textContent;
                     const pubDate = item.querySelector('pubDate').textContent;
 
                     saveVideo(title, link, pubDate, name)
 
-                    otherVideo(videosList, title, link, pubDate)
+                    otherVideo(videosList, title, link, pubDate, false, i, name)
                 });
             }
         })
