@@ -1,0 +1,24 @@
+.popup{
+    min-width: 500px;
+}
+.channel-list{
+    display: none;
+}
+.video-list{
+    display: none;
+}
+
+.add-channel-screen{
+    display: none;
+}
+
+.add-category-screen{
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    body{
+        background-color: black;
+        color: white;
+    }
+}

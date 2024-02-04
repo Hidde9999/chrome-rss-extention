@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RSS extension</title>
+    <script src="rss.js"></script>
+    <script src="export.js"></script>
+    <script src="category.js"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<div class="popup">
+    <div class="add-channel-screen">
+        <input type="text" id="channel-url" placeholder="url"><label>or</label>
+        <input type="text" id="channel-handle" placeholder="youtube handle"><label>or</label>
+        <button id="submitChannelData">Add</button>
+    </div>
+    <div class="add-category-screen">
+        <input type="text" id="category-name" placeholder="name">
+        <button id="submitCategoryData">Add</button>
+    </div>
+    <div class="category-list">
+        <button id="showCategoryPopup">Add category</button>
+        <ol id="categories"></ol>
+    </div>
+    <div class="channel-list">
+        <h2 id="category-name-title"></h2>
+        <button id="backToCategories">Back</button>
+        <button id="showFeedPopup">Add channel</button>
+        <ol id="channels"></ol>
+    </div>
+    <div class="video-list">
+        <h2 id="channel-name"></h2>
+        <button id="backToChannels">Back</button>
+        <ol id="videos"></ol>
+    </div>
+    <br><br>
+    <div>
+        <button id="exportChannelsBtn">Export Channels</button>
+        <button id="importChannelsBtn">Import Channels</button>
+    </div>
+</div>
+</body>
+</html>
