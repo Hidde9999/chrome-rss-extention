@@ -187,6 +187,9 @@ window.onload = function () {
     document.getElementById('importChannelsBtn').addEventListener('click', function() {
         importChannels()
     })
+    document.getElementById('refresh').addEventListener('click', function() {
+        getRssFeeds(selChannel.url, selChannel.name, true)
+    })
     
     loadCategories()
     loadChannels()
