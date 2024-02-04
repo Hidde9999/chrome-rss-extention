@@ -1,5 +1,11 @@
 function exportChannels() {
-    const jsonData = JSON.stringify(channelList, null, 2);
+
+    const exportData = {
+        channelList: channelList,
+        categoryList: categoryList
+    };
+
+    const jsonData = JSON.stringify(exportData, null, 2);
 
     // Create a Blob containing the JSON data
     const blob = new Blob([jsonData], { type: 'application/json' });
@@ -7,7 +13,7 @@ function exportChannels() {
     // Create a temporary anchor element
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'channelList.json';
+    a.download = 'rss-settings.json';
 
     // Append the anchor to the body and trigger a click event to start the download
     document.body.appendChild(a);
@@ -30,26 +36,27 @@ function importChannels() {
 
             reader.onload = function (e) {
                 try {
-                    const importedChannels = JSON.parse(e.target.result);
+                    console.log(e);
+                    const parsedData = JSON.parse(e.target.result);
 
-                    // Check if the imported data is an array
-                    if (Array.isArray(importedChannels)) {
-                        // Clear existing channels and add the imported ones
-                        channelList = [];
-                        importedChannels.forEach(channel => {
-                            addChannel(channel.name, channel.url, channel.category);
-                        });
-
-                        // Refresh the UI with the updated channel list
-                        loadChannels();
-
-                        alert('Channels imported successfully!');
-                    } else {
-                        alert('Invalid format. Please select a valid JSON file.');
+                    if (parsedData.channelList) {
+                        channelList = parsedData.channelList;
+                        localStorage.setItem('channels', JSON.stringify(parsedData.channelList));
+                        // Update the channel list on the UI or perform other actions as needed
+                        console.log('Imported channelList:', channelList);
                     }
+
+                    if (parsedData.categoryList) {
+                        categoryList = parsedData.categoryList;
+                        localStorage.setItem('category', JSON.stringify(parsedData.categoryList));
+                        // Update the channel list on the UI or perform other actions as needed
+                        console.log('Imported channelList:', categoryList);
+                    }
+
+                    console.log('Import successful');
+                    window.location.reload();
                 } catch (error) {
-                    alert('Error parsing JSON. Please select a valid JSON file.');
-                    console.error('Error parsing JSON:', error);
+                    console.error('Error importing data:', error);
                 }
             };
 
