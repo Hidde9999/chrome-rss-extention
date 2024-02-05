@@ -45,6 +45,10 @@ function otherVideo(videosList, title, link, date, isFavorite, i, name) {
 function createVideoElement(video, name, id) {
     const listItem = document.createElement('li');
 
+    if (video.link.includes("youtube.com")){
+        video.link = video.link.replace("www.youtube.com", bestYoutubeSite)
+    }
+
     // Append the video details to the list item
     const paragraphElement = document.createElement('p');
     paragraphElement.innerHTML = `<a href="${video.link}" target="_blank">${video.title}</a> - (Published on ${video.date})`;

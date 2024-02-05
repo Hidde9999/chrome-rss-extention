@@ -193,4 +193,5 @@ window.onload = function () {
     
     loadCategories()
     loadChannels()
+    bestYoutubeInstance()
 };

@@ -2,6 +2,7 @@ let videoListOpen = false
 let channelList = []
 let selChannel= {}
 let category = ""
+let bestYoutubeSite = ""
 const corsSites = ["odysee.com", "youtube.com"]
 
 function getRssFeeds(rssUrl, name, refresh) {
@@ -68,6 +69,17 @@ function noCORSProxy(url){
     const proxyUrl = 'https://corsproxy.io/?'
     return proxyUrl + url
 }
+function bestYoutubeInstance(){
+    fetch("https://api.invidious.io/instances.json?sort_by=type,health")
+        .then(response => response.text())
+        .then(jsonString => {
+            jsonString = JSON.parse(jsonString)
+            bestYoutubeSite = jsonString[0][0]
+        })
+        .catch(error => {
+            console.error('Error fetching RSS feed:', error);
+        });
+}
 function getItems(rssUrl, name){
     fetch(rssUrl)
         .then(response => response.text())
@@ -77,7 +89,6 @@ function getItems(rssUrl, name){
 
             const videosList = document.getElementById('videos');
             videosList.innerHTML= ""
-            console.log("hier")
 
             if (rssUrl.includes("yewtu.be") || rssUrl.includes("youtube.com")){
                 const entries = xmlDoc.querySelectorAll('entry');
@@ -88,10 +99,6 @@ function getItems(rssUrl, name){
                     const published = entry.querySelector('published').textContent
 
                     saveVideo(title, link, published, name)
-
-                    if (link.includes("youtube.com")){
-                        link = link.replace("youtube.com", "yewtu.be")
-                    }
 
                     otherVideo(videosList, title, link, published, false, i, name)
                 });
