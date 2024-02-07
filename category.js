@@ -20,51 +20,51 @@ function goToChannels(name) {
 }
 
 function loadCategories() {
-    const categoryElement = document.getElementById('categories');
+    const categoryElement = document.getElementById('categories')
 
     // Retrieve the JSON string from localStorage
-    const retrievedJsonString = localStorage.getItem('category');
+    const retrievedJsonString = localStorage.getItem('category')
 
     // Convert the JSON string back to an object
-    categoryList = JSON.parse(retrievedJsonString);
+    categoryList = JSON.parse(retrievedJsonString)
 
     // Check if categoryList is not null or undefined
     if (categoryList) {
         categoryList.forEach((list, i) => {
-            const listItem = document.createElement('li');
+            const listItem = document.createElement('li')
 
             // Create the strong element for channel name
-            const strongElement = document.createElement('strong');
+            const strongElement = document.createElement('strong')
             strongElement.textContent = list.name;
             strongElement.addEventListener('click', function() {
                 goToChannels(list.name)
-            });
+            })
 
             // Create the button for removing the channel
-            const removeButton = document.createElement('button');
-            removeButton.textContent = 'Remove';
+            const removeButton = document.createElement('button')
+            removeButton.textContent = 'Remove'
             removeButton.addEventListener('click', function() {
-                removeCategory(i);
-            });
+                removeCategory(i)
+            })
 
             // Append the elements to the list item
-            listItem.appendChild(strongElement);
-            listItem.appendChild(removeButton);
+            listItem.appendChild(strongElement)
+            listItem.appendChild(removeButton)
 
             // Append the list item to the channel element
-            categoryElement.appendChild(listItem);
+            categoryElement.appendChild(listItem)
         });
-        const strongElement = document.createElement('strong');
-        strongElement.textContent = "All Categories";
+        const strongElement = document.createElement('strong')
+        strongElement.textContent = "All Categories"
         strongElement.addEventListener('click', function() {
             goToChannels()
-        });
+        })
         categoryElement.appendChild(strongElement)
     }
 }
 
 function removeCategory(index) {
-    const categoryElement = document.getElementById('categories');
+    const categoryElement = document.getElementById('categories')
 
     // Ensure categoryList is not null
     if (categoryList === null || categoryList === undefined) {
@@ -72,23 +72,23 @@ function removeCategory(index) {
     }
 
     // Remove the channel at the specified index
-    categoryList.splice(index, 1);
+    categoryList.splice(index, 1)
 
     // Convert the object to a JSON string
-    const jsonString = JSON.stringify(categoryList);
+    const jsonString = JSON.stringify(categoryList)
 
     // Store the updated JSON string in localStorage
-    localStorage.setItem('category', jsonString);
+    localStorage.setItem('category', jsonString)
 
     // Clear the channel list on the UI
-    categoryElement.innerHTML = "";
+    categoryElement.innerHTML = ""
 
     // Re-populate the channel list on the UI
     if (categoryList) {
         categoryList.forEach((list, i) => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `<strong onclick="getRssFeeds('${list.url}')">${list.name} <button onclick="removeChannel(${i})">Remove</button></strong>`;
-            categoryElement.appendChild(listItem);
+            const listItem = document.createElement('li')
+            listItem.innerHTML = `<strong onclick="getRssFeeds('${list.url}')">${list.name} <button onclick="removeChannel(${i})">Remove</button></strong>`
+            categoryElement.appendChild(listItem)
         });
     }
 }
@@ -111,23 +111,23 @@ function hideFeedPopup(){
 }
 
 function submitCategoryData() {
-    const nameField = document.getElementById("category-name");
+    const nameField = document.getElementById("category-name")
     if (nameField.value.length < 3) {
-        return;
+        return
     }
 
-    const name = nameField.value;
-    nameField.value = "";
+    const name = nameField.value
+    nameField.value = ""
 
-    addCategory(name);
+    addCategory(name)
 }
 
 function addCategory(name) {
-    const categoryElement = document.getElementById('categories');
+    const categoryElement = document.getElementById('categories')
 
     // Ensure categoryList is not null
     if (categoryList === null || categoryList === undefined) {
-        categoryList = [];
+        categoryList = []
     }
 
     categoryList.push({
@@ -135,14 +135,14 @@ function addCategory(name) {
     });
 
     // Convert the object to a JSON string
-    const jsonString = JSON.stringify(categoryList);
+    const jsonString = JSON.stringify(categoryList)
 
     // Store the JSON string in localStorage
-    localStorage.setItem('category', jsonString);
+    localStorage.setItem('category', jsonString)
 
-    const listItem = document.createElement('li');
-    listItem.innerHTML = `<strong>${name}</strong>`;
-    categoryElement.appendChild(listItem);
+    const listItem = document.createElement('li')
+    listItem.innerHTML = `<strong>${name}</strong>`
+    categoryElement.appendChild(listItem)
 }
 
 function backToCategories() {
