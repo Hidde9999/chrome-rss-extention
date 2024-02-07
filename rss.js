@@ -24,11 +24,14 @@ function getRssFeeds(rssUrl, name, refresh) {
     }
     hideFeedPopup()
 
-    videoList = []
+    if (!refresh){
+        videoList = []
+    }
+
     if(localStorage.getItem(name) && !refresh){
         loadVideo(name)
     } else {
-        getItems(rssUrl, name)
+        getItems(rssUrl, name, refresh)
     }
 
 }
@@ -80,7 +83,7 @@ function bestYoutubeInstance(){
             console.error('Error fetching RSS feed:', error);
         });
 }
-function getItems(rssUrl, name){
+function getItems(rssUrl, name, refresh){
     fetch(rssUrl)
         .then(response => response.text())
         .then(xmlString => {
@@ -98,9 +101,7 @@ function getItems(rssUrl, name){
                     let link = linkElement ? linkElement.getAttribute('href') : entry.querySelector('link').textContent;
                     const published = entry.querySelector('published').textContent
 
-                    saveVideo(title, link, published, name)
-
-                    otherVideo(videosList, title, link, published, false, i, name)
+                    saveVideo(title, link, published, name, refresh, i)
                 });
             } else {
                 const items = xmlDoc.querySelectorAll('item');
@@ -109,11 +110,11 @@ function getItems(rssUrl, name){
                     const link = item.querySelector('link').textContent;
                     const pubDate = item.querySelector('pubDate').textContent;
 
-                    saveVideo(title, link, pubDate, name)
-
-                    otherVideo(videosList, title, link, pubDate, false, i, name)
+                    saveVideo(title, link, pubDate, name, refresh, i)
                 });
+
             }
+            cookieSave(name)
         })
         .catch(error => {
             console.error('Error fetching RSS feed:', error);
