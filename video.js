@@ -15,15 +15,15 @@ function saveVideoList( name, refresh) {
         // Sort videoList by date in descending order (newest first)
         tempVideoList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
 
-        // Check if the videoList is not empty and if the date of the new video is not newer than the latest video
+// Check if the videoList is not empty and if the date of the new video is newer than the latest video
         tempVideoList.forEach((item) => {
-            // console.log(item.date);
-            if (Date.parse(videoList[videoList.length - 1].date) > Date.parse(item.date)) {
-                console.log(videoList[0].title +" The video is newer than the latest video")
-                videoList.push(item)
+            if (videoList.length > 0 && Date.parse(item.date) > Date.parse(videoList[0].date)) {
+                console.log(item.title + " is newer than "+ videoList[videoList.length - 1].title);
+                videoList.push(item);
             }
-        })
-        cookieSave()
+        });
+
+        cookieSave(name)
     } else {
         // Add the new video to the videoList
         videoList = tempVideoList
@@ -50,6 +50,9 @@ function loadVideo(name) {
 
     // Convert the JSON string back to an object
     videoList = JSON.parse(retrievedJsonString) || []
+
+    // Sort videoList by date in descending order (newest first)
+    videoList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
 
     videoList.forEach((item, i) => {
         otherVideo(videosList, item.title, item.link, item.date, item.isFavorite, i, name) // Pass the name parameter to otherVideo
