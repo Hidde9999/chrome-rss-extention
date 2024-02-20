@@ -104,16 +104,16 @@ function getItems(rssUrl, name, refresh){
                 });
             } else {
                 const items = xmlDoc.querySelectorAll('item')
-                items.forEach((item, i) => {
+                items.forEach((item) => {
                     const title = item.querySelector('title').textContent
                     const link = item.querySelector('link').textContent
                     const pubDate = item.querySelector('pubDate').textContent
 
-                    saveVideo(title, link, pubDate, name, refresh, i)
+                    saveVideo(title, link, pubDate, name, refresh)
                 });
 
             }
-            cookieSave(name)
+            saveVideoList(name, refresh)
         })
         .catch(error => {
             console.error('Error fetching RSS feed:', error)
@@ -270,6 +270,7 @@ function backToChannels(){
 
     const videosList = document.getElementById('videos')
     videosList.innerHTML = ""
+    videoList = []
 }
 function showFeedPopup(){
     const channelListElements = document.getElementById("showFeedPopup")

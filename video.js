@@ -1,30 +1,34 @@
-let videoList = [];
+let videoList = []
+let tempVideoList = []
+let favoriteList = []
 
-function saveVideo(title, link, date, name, refresh, i) {
+function saveVideo(title, link, date) {
+        tempVideoList.push({
+            title: title,
+            link: link,
+            date: date,
+            isFavorite: false
+        })
+}
+function saveVideoList( name, refresh) {
     if (refresh){
-        // Initialize videoList if it's undefined or empty
-        if (!videoList || videoList.length === 0) {
-            videoList = []
-        }
+        // Sort videoList by date in descending order (newest first)
+        tempVideoList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
 
         // Check if the videoList is not empty and if the date of the new video is not newer than the latest video
-        if (videoList.length > 0 && Date.parse(date) < Date.parse(videoList[videoList.length - 1].date)) {
-            console.log("The video is not newer than the latest video")
-            return
-        }
-
-        if (title == videoList[i].title){
-            return
-        }
+        tempVideoList.forEach((item) => {
+            // console.log(item.date);
+            if (Date.parse(videoList[videoList.length - 1].date) > Date.parse(item.date)) {
+                console.log(videoList[0].title +" The video is newer than the latest video")
+                videoList.push(item)
+            }
+        })
+        cookieSave()
+    } else {
+        // Add the new video to the videoList
+        videoList = tempVideoList
+        cookieSave(name)
     }
-
-    // Add the new video to the videoList
-    videoList.push({
-        title: title,
-        link: link,
-        date: date,
-        isFavorite: false
-    })
 }
 
 function cookieSave(name){
@@ -35,6 +39,7 @@ function cookieSave(name){
     const jsonString = JSON.stringify(videoList)
     localStorage.setItem(name, jsonString)
 
+    tempVideoList = []
     loadVideo(name)
 }
 
