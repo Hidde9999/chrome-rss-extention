@@ -1,8 +1,7 @@
-let categoryList = []
+let categoryList = [];
 
 function goToChannels(name) {
-    category = ""
-    if (name){
+    if (name) {
         document.getElementById("category-name-title").innerText = name
         category = name
     }
@@ -21,125 +20,54 @@ function goToChannels(name) {
 
 function loadCategories() {
     const categoryElement = document.getElementById('categories')
-
-    // Retrieve the JSON string from localStorage
-    const retrievedJsonString = localStorage.getItem('category')
-
-    // Convert the JSON string back to an object
-    categoryList = JSON.parse(retrievedJsonString)
-
-    // Check if categoryList is not null or undefined
-    if (categoryList) {
-        categoryList.forEach((list, i) => {
-            const listItem = document.createElement('li')
-
-            // Create the strong element for channel name
-            const strongElement = document.createElement('strong')
-            strongElement.textContent = list.name;
-            strongElement.addEventListener('click', function() {
-                goToChannels(list.name)
-            })
-
-            // Create the button for removing the channel
-            const removeButton = document.createElement('button')
-            removeButton.textContent = 'Remove'
-            removeButton.addEventListener('click', function() {
-                removeCategory(i)
-            })
-
-            // Append the elements to the list item
-            listItem.appendChild(strongElement)
-            listItem.appendChild(removeButton)
-
-            // Append the list item to the channel element
-            categoryElement.appendChild(listItem)
-        });
+    categoryList = JSON.parse(localStorage.getItem('category')) || []
+    categoryList.forEach((list, i) => {
+        const listItem = document.createElement('li')
         const strongElement = document.createElement('strong')
-        strongElement.textContent = "All Categories"
-        strongElement.addEventListener('click', function() {
-            goToChannels()
+        strongElement.textContent = list.name
+        strongElement.addEventListener('click', function () {
+            goToChannels(list.name)
         })
-        categoryElement.appendChild(strongElement)
-    }
+        const removeButton = document.createElement('button')
+        removeButton.textContent = 'Remove'
+        removeButton.addEventListener('click', function () {
+            removeCategory(i)
+        });
+        listItem.appendChild(strongElement)
+        listItem.appendChild(removeButton)
+        categoryElement.appendChild(listItem)
+    });
+    const strongElement = document.createElement('strong')
+    strongElement.textContent = "All Categories"
+    strongElement.addEventListener('click', function () {
+        category = ""
+        goToChannels()
+    })
+    categoryElement.appendChild(strongElement)
 }
 
 function removeCategory(index) {
-    const categoryElement = document.getElementById('categories')
-
-    // Ensure categoryList is not null
-    if (categoryList === null || categoryList === undefined) {
-        return;
-    }
-
-    // Remove the channel at the specified index
+    if (!categoryList) return
     categoryList.splice(index, 1)
-
-    // Convert the object to a JSON string
-    const jsonString = JSON.stringify(categoryList)
-
-    // Store the updated JSON string in localStorage
-    localStorage.setItem('category', jsonString)
-
-    // Clear the channel list on the UI
+    localStorage.setItem('category', JSON.stringify(categoryList))
+    const categoryElement = document.getElementById('categories')
     categoryElement.innerHTML = ""
-
-    // Re-populate the channel list on the UI
-    if (categoryList) {
-        categoryList.forEach((list, i) => {
-            const listItem = document.createElement('li')
-            listItem.innerHTML = `<strong onclick="getRssFeeds('${list.url}')">${list.name} <button onclick="removeChannel(${i})">Remove</button></strong>`
-            categoryElement.appendChild(listItem)
-        });
-    }
-}
-
-function showCategoryPopup(){
-    const channelListElements = document.getElementById("showCategoryPopup")
-    const addRSSScreen = document.getElementsByClassName("add-category-screen")
-    if (addRSSScreen.length > 0) {
-        addRSSScreen[0].style.display = "block"
-    }
-    channelListElements.style.display = "none"
-}
-function hideFeedPopup(){
-    const categoryListElements = document.getElementById("showCategoryPopup")
-    const addRSSScreen = document.getElementsByClassName("add-category-screen")
-    if (addRSSScreen.length > 0) {
-        addRSSScreen[0].style.display = "none"
-    }
-    categoryListElements.style.display = "block"
+    loadCategories()
 }
 
 function submitCategoryData() {
     const nameField = document.getElementById("category-name")
-    if (nameField.value.length < 3) {
-        return
-    }
-
-    const name = nameField.value
+    const name = nameField.value.trim()
+    if (name.length < 3) return
     nameField.value = ""
-
     addCategory(name)
 }
 
 function addCategory(name) {
+    if (!categoryList) categoryList = []
+    categoryList.push({ name: name })
+    localStorage.setItem('category', JSON.stringify(categoryList))
     const categoryElement = document.getElementById('categories')
-
-    // Ensure categoryList is not null
-    if (categoryList === null || categoryList === undefined) {
-        categoryList = []
-    }
-
-    categoryList.push({
-        name: name
-    });
-
-    // Convert the object to a JSON string
-    const jsonString = JSON.stringify(categoryList)
-
-    // Store the JSON string in localStorage
-    localStorage.setItem('category', jsonString)
-
     const listItem = document.createElement('li')
     listItem.innerHTML = `<strong>${name}</strong>`
     categoryElement.appendChild(listItem)
@@ -154,9 +82,6 @@ function backToCategories() {
     if (channelListElements.length > 0) {
         channelListElements[0].style.display = "block"
     }
-
-    const videosList = document.getElementById('videos')
-    videosList.innerHTML = ""
 }
 
 window.onload = function () {
@@ -165,9 +90,9 @@ window.onload = function () {
     document.getElementById('submitCategoryData').addEventListener('click', function() {
         submitCategoryData()
     })
-    document.getElementById('showCategoryPopup').addEventListener('click', function() {
-        showCategoryPopup()
-    })
+    // document.getElementById('showCategoryPopup').addEventListener('click', function() {
+    //     showCategoryPopup()
+    // })
 
     document.getElementById('showFeedPopup').addEventListener('click', function() {
         showFeedPopup()
@@ -194,4 +119,4 @@ window.onload = function () {
     loadCategories()
     loadChannels()
     bestYoutubeInstance()
-};
+}
