@@ -45,6 +45,14 @@ function loadVideo(name) {
         appendVideo(videosList, item, name, i)
     })
 }
+function loadVideoFromFavorite() {
+    const videosList = document.getElementById('videos')
+    favoriteList = JSON.parse(localStorage.getItem("favorite")) || []
+    favoriteList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+    favoriteList.forEach((item, i) => {
+        appendVideo(videosList, item, null, i)
+    })
+}
 
 function appendVideo(videosList, video, name, id) {
     const listItem = createVideoElement(video, name, id)
@@ -84,4 +92,12 @@ function loadVideoById(id, name) {
     if (itemToReplace) {
         videosList.replaceChild(createVideoElement(videoList[id], name, id), itemToReplace)
     }
+}
+
+function loadFavorites(){
+    // Retrieve the JSON string from localStorage
+    const retrievedJsonString = localStorage.getItem('favorite')
+
+    // Convert the JSON string back to an object
+    favoriteList = JSON.parse(retrievedJsonString)
 }

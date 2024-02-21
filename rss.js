@@ -9,9 +9,7 @@ function getRssFeeds(rssUrl, name, refresh) {
     if (videoListOpen){
         return
     }
-    if (corsSites.some(site => rssUrl.includes(site))) {
-        rssUrl = noCORSProxy(rssUrl)
-    }
+
     document.getElementById("channel-name").innerText = name
 
     const videoListElements = document.getElementsByClassName("video-list")
@@ -26,6 +24,15 @@ function getRssFeeds(rssUrl, name, refresh) {
 
     if (!refresh){
         videoList = []
+    }
+
+    if (name == "favorites"){
+        loadVideoFromFavorite()
+        return
+    }
+
+    if (corsSites.some(site => rssUrl.includes(site))) {
+        rssUrl = noCORSProxy(rssUrl)
     }
 
     if(localStorage.getItem(name) && !refresh){
@@ -265,18 +272,21 @@ function backToChannels(){
         videoListElements[0].style.display = "none"
     }
     if (channelListElements.length > 0) {
-        channelListElements[0].style.display = "block"
+        channelListElements[0].style.display = "inline-block"
     }
 
     const videosList = document.getElementById('videos')
     videosList.innerHTML = ""
     videoList = []
 }
+function goToFavorites(){
+    getRssFeeds(null, "favorites", false)
+}
 function showFeedPopup(){
     const channelListElements = document.getElementById("showFeedPopup")
     const addRSSScreen = document.getElementsByClassName("add-channel-screen")
     if (addRSSScreen.length > 0) {
-        addRSSScreen[0].style.display = "block"
+        addRSSScreen[0].style.display = "inline-block"
     }
     channelListElements.style.display = "none"
 }
@@ -286,5 +296,5 @@ function hideFeedPopup(){
     if (addRSSScreen.length > 0) {
         addRSSScreen[0].style.display = "none"
     }
-        channelListElements.style.display = "block"
+        channelListElements.style.display = "inline-block"
 }

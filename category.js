@@ -12,7 +12,7 @@ function goToChannels(name) {
         videoListElements[0].style.display = "none"
     }
     if (channelListElements.length > 0) {
-        channelListElements[0].style.display = "block"
+        channelListElements[0].style.display = "inline-block"
     }
 
     loadChannel()
