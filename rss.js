@@ -5,12 +5,15 @@ let category = ""
 let bestYoutubeSite = ""
 const corsSites = ["odysee.com", "youtube.com"]
 
-function getRssFeeds(rssUrl, name, refresh) {
+function getRssFeeds(rssUrl, name, refresh, multiple) {
     if (videoListOpen){
         return
     }
-
-    document.getElementById("channel-name").innerText = name
+    if (!multiple){
+        document.getElementById("channel-name").innerText = name
+    } else {
+        document.getElementById("channel-name").innerText = category
+    }
 
     const videoListElements = document.getElementsByClassName("video-list")
     const channelListElements = document.getElementsByClassName("channel-list")
@@ -36,9 +39,9 @@ function getRssFeeds(rssUrl, name, refresh) {
     }
 
     if(localStorage.getItem(name) && !refresh){
-        loadVideo(name)
+        loadVideo(name, multiple)
     } else {
-        getItems(rssUrl, name, refresh)
+        getItems(rssUrl, refresh, multiple)
     }
 }
 function getRssFeedTitle(feedUrl) {
@@ -89,15 +92,18 @@ function bestYoutubeInstance(){
             console.error('Error fetching RSS feed:', error)
         });
 }
-function getItems(rssUrl, name, refresh){
+function getItems(rssUrl, refresh, multiple){
     fetch(rssUrl)
         .then(response => response.text())
         .then(xmlString => {
             const parser = new DOMParser()
             const xmlDoc = parser.parseFromString(xmlString, 'application/xml')
 
-            const videosList = document.getElementById('videos')
-            videosList.innerHTML= ""
+            if (!multiple){
+                const videosList = document.getElementById('videos')
+                videosList.innerHTML= ""
+            }
+            const channelName = xmlDoc.querySelector('title')
 
             if (rssUrl.includes("yewtu.be") || rssUrl.includes("youtube.com")){
                 const entries = xmlDoc.querySelectorAll('entry')
@@ -107,7 +113,7 @@ function getItems(rssUrl, name, refresh){
                     let link = linkElement ? linkElement.getAttribute('href') : entry.querySelector('link').textContent
                     const published = entry.querySelector('published').textContent
 
-                    saveVideo(title, link, published, name, refresh, i)
+                    saveVideo(title, link, published, channelName.textContent, refresh, i)
                 });
             } else {
                 const items = xmlDoc.querySelectorAll('item')
@@ -116,11 +122,11 @@ function getItems(rssUrl, name, refresh){
                     const link = item.querySelector('link').textContent
                     const pubDate = item.querySelector('pubDate').textContent
 
-                    saveVideo(title, link, pubDate, name, refresh)
+                    saveVideo(title, link, pubDate, channelName.textContent, refresh)
                 });
 
             }
-            saveVideoList(name, refresh)
+            saveVideoList(channelName.textContent, refresh)
         })
         .catch(error => {
             console.error('Error fetching RSS feed:', error)
@@ -140,6 +146,7 @@ function loadChannel(){
     channelElement.innerHTML = ''
     // Check if channelList is not null or undefined
     if (channelList) {
+        const listItem = document.createElement('li')
         channelList.forEach((list, i) => {
             if (list.category.includes(category) || category == ""){
                 const listItem = document.createElement('li')
@@ -167,6 +174,23 @@ function loadChannel(){
                 channelElement.appendChild(listItem)
             }
         });
+        const strongElement = document.createElement('strong')
+        strongElement.textContent = "All Videos"
+        strongElement.addEventListener('click', function () {
+            channelList.forEach(data =>{
+                if (category != ""){
+                    if (data.category == category){
+                        getRssFeeds(data.url, data.name, false, true)
+                    }
+                } else {
+                    getRssFeeds(data.url, data.name, false, true)
+                }
+            })
+        })
+        // Append the elements to the list item
+        listItem.appendChild(strongElement)
+        // Append the list item to the channel element
+        channelElement.appendChild(listItem)
     }
 }
 function addChannel(name, url, selcategory) {
@@ -277,6 +301,7 @@ function backToChannels(){
 
     const videosList = document.getElementById('videos')
     videosList.innerHTML = ""
+    allVideosList = []
     videoList = []
 }
 function goToFavorites(){

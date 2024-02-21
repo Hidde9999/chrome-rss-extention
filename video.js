@@ -1,20 +1,22 @@
 let videoList = []
+let allVideosList = []
 let tempVideoList = []
 let favoriteList = []
 
-function saveVideo(title, link, date) {
+function saveVideo(title, link, date, channelName) {
     tempVideoList.push({
         title: title,
+        channelName: channelName,
         link: link,
         date: date,
         isFavorite: false
     })
 }
 
-function saveVideoList(name, refresh) {
+function saveVideoList(name, refresh, multiple) {
     if (refresh) {
         updateVideoList(name)
-    } else {
+    } else if (!multiple) {
         videoList = tempVideoList.slice()
         cookieSave(name)
     }
@@ -37,14 +39,26 @@ function cookieSave(name) {
     loadVideo(name)
 }
 
-function loadVideo(name) {
+function loadVideo(name, multiple) {
     const videosList = document.getElementById('videos')
     videoList = JSON.parse(localStorage.getItem(name)) || []
     videoList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
     videoList.forEach((item, i) => {
-        appendVideo(videosList, item, name, i)
+        allVideosList.push(item)
+        if (!multiple) {
+            appendVideo(videosList, item, name, i)
+        }
     })
+    if (multiple) {
+        videosList.innerHTML = ""
+        allVideosList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+        console.log(allVideosList)
+        allVideosList.forEach((item, i) => {
+            appendVideo(videosList, item, name, i)
+        })
+    }
 }
+
 function loadVideoFromFavorite() {
     const videosList = document.getElementById('videos')
     favoriteList = JSON.parse(localStorage.getItem("favorite")) || []
@@ -62,8 +76,11 @@ function appendVideo(videosList, video, name, id) {
 function createVideoElement(video, name, id) {
     const listItem = document.createElement('li')
     const paragraphElement = document.createElement('p')
-    video.link = video.link.replace("www.youtube.com", bestYoutubeSite)
-    paragraphElement.innerHTML = `<a href="${video.link}" target="_blank">${video.title}</a> - (Published on ${video.date})`
+    if (video.link) {
+        // If the 'link' property is present, use it
+        video.link = video.link.replace("www.youtube.com", bestYoutubeSite);
+    }
+    paragraphElement.innerHTML = `<a href="${video.link}" target="_blank">${video.title}</a> - ${video.channelName} (Published on ${video.date})`
     listItem.appendChild(paragraphElement)
     const favoriteButton = document.createElement('button')
     favoriteButton.textContent = video.isFavorite ? 'Remove Favorite' : 'Add to Favorites'
@@ -76,7 +93,7 @@ function createVideoElement(video, name, id) {
 
 function toggleFavorite(id, name) {
     videoList[id].isFavorite = !videoList[id].isFavorite;
-    if (videoList[id].isFavorite){
+    if (videoList[id].isFavorite) {
         favoriteList.push(videoList[id])
         localStorage.setItem("favorite", JSON.stringify(favoriteList))
     } else {
@@ -94,7 +111,7 @@ function loadVideoById(id, name) {
     }
 }
 
-function loadFavorites(){
+function loadFavorites() {
     // Retrieve the JSON string from localStorage
     const retrievedJsonString = localStorage.getItem('favorite')
 
