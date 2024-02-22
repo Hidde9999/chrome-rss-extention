@@ -2,6 +2,7 @@ let videoList = []
 let allVideosList = []
 let tempVideoList = []
 let favoriteList = []
+let favoriteScreen = false
 
 function saveVideo(title, link, date, channelName) {
     tempVideoList.push({
@@ -52,7 +53,6 @@ function loadVideo(name, multiple) {
     if (multiple) {
         videosList.innerHTML = ""
         allVideosList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
-        console.log(allVideosList)
         allVideosList.forEach((item, i) => {
             appendVideo(videosList, item, name, i)
         })
@@ -60,10 +60,12 @@ function loadVideo(name, multiple) {
 }
 
 function loadVideoFromFavorite() {
+    favoriteScreen = true
     const videosList = document.getElementById('videos')
     favoriteList = JSON.parse(localStorage.getItem("favorite")) || []
     favoriteList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
     favoriteList.forEach((item, i) => {
+        allVideosList.push(item)
         appendVideo(videosList, item, null, i)
     })
 }
@@ -77,9 +79,12 @@ function appendVideo(videosList, video, name, id) {
 function createVideoElement(video, name, id) {
     const listItem = document.createElement('li')
     const paragraphElement = document.createElement('p')
+    if (!video){
+        return listItem
+    }
     if (video.link) {
         // If the 'link' property is present, use it
-        video.link = video.link.replace("www.youtube.com", bestYoutubeSite);
+        video.link = video.link.replace("www.youtube.com", bestYoutubeSite)
     }
     paragraphElement.innerHTML = `<a href="${video.link}" target="_blank">${video.title}</a> - ${video.channelName} (Published on ${video.date})`
     listItem.appendChild(paragraphElement)
@@ -92,23 +97,43 @@ function createVideoElement(video, name, id) {
     return listItem
 }
 
-function toggleFavorite(id, name) {
-    videoList[id].isFavorite = !videoList[id].isFavorite;
-    if (videoList[id].isFavorite) {
-        favoriteList.push(videoList[id])
-        localStorage.setItem("favorite", JSON.stringify(favoriteList))
+function toggleFavorite(id) {
+    const channelName = allVideosList[id].channelName
+
+    tempVideoList = JSON.parse(localStorage.getItem(channelName))
+    allVideosList[id].isFavorite = !allVideosList[id].isFavorite
+    tempVideoList[id].isFavorite = !tempVideoList[id].isFavorite
+    if (allVideosList[id].isFavorite) {
+        favoriteList.push(allVideosList[id])
     } else {
-        // favoriteList.push(videoList[id])
+        const index = favoriteList.indexOf(allVideosList[id])
+        if (index !== -1) {
+            favoriteList.splice(index, 1)
+            allVideosList.splice(index, 1)
+
+            if (favoriteScreen){
+                // Remove the corresponding listItem from the videosList
+                const videosList = document.getElementById('videos')
+                const listItemToRemove = videosList.children[id]
+                if (listItemToRemove) {
+                    videosList.removeChild(listItemToRemove)
+                }
+            }
+        }
     }
-    localStorage.setItem(name, JSON.stringify(videoList))
-    loadVideoById(id, name)
+    localStorage.setItem("favorite", JSON.stringify(favoriteList))
+    localStorage.setItem(channelName, JSON.stringify(tempVideoList))
+    if (!favoriteScreen){
+        loadVideoById(id, channelName)
+    }
+    tempVideoList = []
 }
 
 function loadVideoById(id, name) {
     const videosList = document.getElementById('videos')
     const itemToReplace = videosList.children[id]
     if (itemToReplace) {
-        videosList.replaceChild(createVideoElement(videoList[id], name, id), itemToReplace)
+        videosList.replaceChild(createVideoElement(allVideosList[id], name, id), itemToReplace)
     }
 }
 

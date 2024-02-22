@@ -290,6 +290,7 @@ function getTitle(url, urlField){
         })
 }
 function backToChannels(){
+    favoriteScreen = false
     videoListOpen = false
     const videoListElements = document.getElementsByClassName("video-list")
     const channelListElements = document.getElementsByClassName("channel-list")
