@@ -63,6 +63,12 @@ function loadVideoFromFavorite() {
     favoriteScreen = true
     const videosList = document.getElementById('videos')
     favoriteList = JSON.parse(localStorage.getItem("favorite")) || []
+    if (favoriteList.length <= 0){
+        hideLoader()
+        
+        const videosList = document.getElementById('videos')
+        videosList.innerHTML = "There no favorites"
+    }
     favoriteList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
     favoriteList.forEach((item, i) => {
         allVideosList.push(item)
