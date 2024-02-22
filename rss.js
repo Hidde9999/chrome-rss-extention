@@ -9,6 +9,7 @@ function getRssFeeds(rssUrl, name, refresh, multiple) {
     if (videoListOpen){
         return
     }
+    showLoader()
     if (!multiple){
         document.getElementById("channel-name").innerText = name
     } else {

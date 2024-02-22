@@ -69,6 +69,7 @@ function loadVideoFromFavorite() {
 }
 
 function appendVideo(videosList, video, name, id) {
+    hideLoader()
     const listItem = createVideoElement(video, name, id)
     videosList.appendChild(listItem)
 }
