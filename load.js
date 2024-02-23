@@ -37,10 +37,10 @@ window.onload = function () {
 
 // JavaScript function to show the loading spinner
 function showLoader() {
-    document.querySelector('.loader').style.display = 'block';
+    document.querySelector('.loader').style.display = 'block'
 }
 
 // JavaScript function to hide the loading spinner
 function hideLoader() {
-    document.querySelector('.loader').style.display = 'none';
+    document.querySelector('.loader').style.display = 'none'
 }
