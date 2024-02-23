@@ -95,7 +95,6 @@ function createVideoElement(video, id) {
     paragraphElement.innerHTML = `<a href="${video.link}" target="_blank">${video.title}</a> - ${video.channelName} (Published on ${video.date})`
     listItem.appendChild(paragraphElement)
     const favoriteButton = document.createElement('button')
-    // favoriteButton.textContent = video.isFavorite ? 'Remove Favorite' : 'Add to Favorites'
     favoriteButton.innerHTML = video.isFavorite ? '❤️' : '🤍';
     favoriteButton.addEventListener('click', function () {
         toggleFavorite(id)

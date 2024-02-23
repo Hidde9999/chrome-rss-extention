@@ -162,7 +162,7 @@ function loadChannel(){
 
                 // Create the button for removing the channel
                 const removeButton = document.createElement('button')
-                removeButton.textContent = 'Remove'
+                removeButton.innerHTML = '❌'
                 removeButton.addEventListener('click', function() {
                     removeChannel(i)
                 })
