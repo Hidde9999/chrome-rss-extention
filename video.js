@@ -47,14 +47,14 @@ function loadVideo(name, multiple) {
     videoList.forEach((item, i) => {
         allVideosList.push(item)
         if (!multiple) {
-            appendVideo(videosList, item, name, i)
+            appendVideo(videosList, item, i)
         }
     })
     if (multiple) {
         videosList.innerHTML = ""
         allVideosList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
         allVideosList.forEach((item, i) => {
-            appendVideo(videosList, item, name, i)
+            appendVideo(videosList, item, i)
         })
     }
 }
@@ -65,24 +65,24 @@ function loadVideoFromFavorite() {
     favoriteList = JSON.parse(localStorage.getItem("favorite")) || []
     if (favoriteList.length <= 0){
         hideLoader()
-        
+
         const videosList = document.getElementById('videos')
         videosList.innerHTML = "There no favorites"
     }
     favoriteList.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
     favoriteList.forEach((item, i) => {
         allVideosList.push(item)
-        appendVideo(videosList, item, null, i)
+        appendVideo(videosList, item, i)
     })
 }
 
-function appendVideo(videosList, video, name, id) {
+function appendVideo(videosList, video, id) {
     hideLoader()
-    const listItem = createVideoElement(video, name, id)
+    const listItem = createVideoElement(video, id)
     videosList.appendChild(listItem)
 }
 
-function createVideoElement(video, name, id) {
+function createVideoElement(video, id) {
     const listItem = document.createElement('li')
     const paragraphElement = document.createElement('p')
     if (!video){
@@ -95,9 +95,10 @@ function createVideoElement(video, name, id) {
     paragraphElement.innerHTML = `<a href="${video.link}" target="_blank">${video.title}</a> - ${video.channelName} (Published on ${video.date})`
     listItem.appendChild(paragraphElement)
     const favoriteButton = document.createElement('button')
-    favoriteButton.textContent = video.isFavorite ? 'Remove Favorite' : 'Add to Favorites'
+    // favoriteButton.textContent = video.isFavorite ? 'Remove Favorite' : 'Add to Favorites'
+    favoriteButton.innerHTML = video.isFavorite ? '❤️' : '🤍';
     favoriteButton.addEventListener('click', function () {
-        toggleFavorite(id, name)
+        toggleFavorite(id)
     });
     listItem.appendChild(favoriteButton)
     return listItem
@@ -115,9 +116,9 @@ function toggleFavorite(id) {
         const index = favoriteList.indexOf(allVideosList[id])
         if (index !== -1) {
             favoriteList.splice(index, 1)
-            allVideosList.splice(index, 1)
 
             if (favoriteScreen){
+                allVideosList.splice(index, 1)
                 // Remove the corresponding listItem from the videosList
                 const videosList = document.getElementById('videos')
                 const listItemToRemove = videosList.children[id]
@@ -130,16 +131,16 @@ function toggleFavorite(id) {
     localStorage.setItem("favorite", JSON.stringify(favoriteList))
     localStorage.setItem(channelName, JSON.stringify(tempVideoList))
     if (!favoriteScreen){
-        loadVideoById(id, channelName)
+        loadVideoById(id)
     }
     tempVideoList = []
 }
 
-function loadVideoById(id, name) {
+function loadVideoById(id) {
     const videosList = document.getElementById('videos')
     const itemToReplace = videosList.children[id]
     if (itemToReplace) {
-        videosList.replaceChild(createVideoElement(allVideosList[id], name, id), itemToReplace)
+        videosList.replaceChild(createVideoElement(allVideosList[id], id), itemToReplace)
     }
 }
 
