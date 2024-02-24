@@ -29,6 +29,7 @@ function loadCategories() {
             goToChannels(list.name)
         })
         const removeButton = document.createElement('button')
+        removeButton.className = 'right'
         removeButton.innerHTML = '❌'
         removeButton.addEventListener('click', function () {
             removeCategory(i)

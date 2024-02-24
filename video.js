@@ -88,11 +88,12 @@ function createVideoElement(video, id) {
     if (!video){
         return listItem
     }
-    if (video.link) {
+    let link = video.link
+    if (link) {
         // If the 'link' property is present, use it
-        video.link = video.link.replace("www.youtube.com", bestYoutubeSite)
+        link = link.replace("www.youtube.com", bestYoutubeSite)
     }
-    paragraphElement.innerHTML = `<a href="${video.link}" target="_blank">${video.title}</a> - ${video.channelName} (Published on ${video.date})`
+    paragraphElement.innerHTML = `<a href="${link}" target="_blank">${video.title}</a> - ${video.channelName} (Published on ${video.date})`
     listItem.appendChild(paragraphElement)
     const favoriteButton = document.createElement('button')
     favoriteButton.innerHTML = video.isFavorite ? '❤️' : '🤍';
