@@ -1,4 +1,3 @@
-//hoi
 function exportChannels() {
 
     const exportData = {
